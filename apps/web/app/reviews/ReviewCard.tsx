@@ -66,7 +66,7 @@ export function ReviewCard({ review }: { review: ReviewItem }) {
       </p>
 
       {/* Opening quote */}
-      <p className="mt-1 text-xl leading-none text-[rgba(201,168,76,0.28)] font-serif select-none">"</p>
+      <p className="mt-1 text-xl leading-none text-[rgba(201,168,76,0.28)] font-serif select-none">&ldquo;</p>
 
       {/* Review text — truncated by default, full on expand */}
       <div

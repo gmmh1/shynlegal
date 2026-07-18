@@ -28,7 +28,7 @@ export default function TermsPage() {
 
         <Section title="1. Who We Are">
           <p>
-            SHYN Legal (<strong>"we"</strong>, <strong>"us"</strong>, <strong>"our"</strong>) is an immigration advisory firm operating from 25 Cabot Square, London E14 4QA. We provide immigration advice and related services in accordance with the Immigration Act 1971 and relevant UK immigration legislation.
+            SHYN Legal (<strong>&ldquo;we&rdquo;</strong>, <strong>&ldquo;us&rdquo;</strong>, <strong>&ldquo;our&rdquo;</strong>) is an immigration advisory firm operating from 25 Cabot Square, London E14 4QA. We provide immigration advice and related services in accordance with the Immigration Act 1971 and relevant UK immigration legislation.
           </p>
           <p className="mt-3">
             Contact: <a href="mailto:info@shynlegal.co.uk" className="text-[#C9A84C] hover:underline">info@shynlegal.co.uk</a> | <a href="tel:02034887525" className="text-[#C9A84C] hover:underline">020 3488 7525</a>
