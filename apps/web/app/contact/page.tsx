@@ -5,11 +5,16 @@ import { FormEvent, useState } from "react";
 
 const visaTypes = [
   "Spouse Visa",
+  "Fiancé Visa",
+  "Unmarried Partner Visa",
   "Student Visa",
   "Skilled Worker Visa",
+  "Health & Care Worker Visa",
   "Visit Visa",
-  "Citizenship",
-  "Other",
+  "Naturalisation & Citizenship",
+  "EU Settlement Scheme",
+  "Ancestry Visa",
+  "Other / Not Sure",
 ];
 
 const contactDetails = [
