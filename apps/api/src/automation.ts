@@ -1,7 +1,7 @@
 import { config } from "./config.js";
 import { logAutomationEvent } from "./db.js";
 
-// Sent via Brevo's HTTP API rather than raw SMTP: many PaaS hosts (Railway
+// Sent via Resend's HTTP API rather than raw SMTP: many PaaS hosts (Railway
 // included) block outbound SMTP (ports 465/587) at the platform level, so a
 // direct connection to any mail server times out or gets refused. The HTTP
 // API runs over normal HTTPS, which isn't blocked.
@@ -11,27 +11,26 @@ async function sendMail(options: {
   text: string;
   html: string;
 }) {
-  if (!config.brevoApiKey) return;
+  if (!config.resendApiKey) return;
 
-  const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+  const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Accept: "application/json",
-      "api-key": config.brevoApiKey,
+      Authorization: `Bearer ${config.resendApiKey}`,
     },
     body: JSON.stringify({
-      sender: { name: "SHYN Legal", email: config.smtpFrom ?? config.smtpUser ?? "info@shynlegal.co.uk" },
-      to: [{ email: options.to }],
+      from: `SHYN Legal <${config.smtpFrom ?? config.smtpUser ?? "info@shynlegal.co.uk"}>`,
+      to: [options.to],
       subject: options.subject,
-      htmlContent: options.html,
-      textContent: options.text,
+      html: options.html,
+      text: options.text,
     }),
   });
 
   if (!res.ok) {
     const body = await res.text().catch(() => "");
-    throw new Error(`Brevo send failed (${res.status}): ${body}`);
+    throw new Error(`Resend send failed (${res.status}): ${body}`);
   }
 }
 

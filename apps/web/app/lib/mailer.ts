@@ -1,8 +1,8 @@
-// Sent via Brevo's HTTP API rather than raw SMTP: Railway blocks outbound
+// Sent via Resend's HTTP API rather than raw SMTP: Railway blocks outbound
 // SMTP (ports 465/587) at the platform level, so a direct connection to any
 // mail server — including well-known ones like Gmail/Outlook — times out or
 // gets refused. The HTTP API runs over normal HTTPS, which isn't blocked.
-const BREVO_API_KEY = process.env.BREVO_API_KEY;
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const FROM_EMAIL = process.env.SMTP_FROM ?? process.env.SMTP_USER ?? "info@shynlegal.co.uk";
 const FROM_NAME = "SHYN Legal";
 const NOTIFY = process.env.NOTIFY_EMAIL ?? "info@shynlegal.co.uk";
@@ -13,27 +13,26 @@ async function sendMail(opts: {
   text: string;
   html: string;
 }) {
-  if (!BREVO_API_KEY) return;
+  if (!RESEND_API_KEY) return;
 
-  const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+  const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Accept: "application/json",
-      "api-key": BREVO_API_KEY,
+      Authorization: `Bearer ${RESEND_API_KEY}`,
     },
     body: JSON.stringify({
-      sender: { name: FROM_NAME, email: FROM_EMAIL },
-      to: [{ email: opts.to }],
+      from: `${FROM_NAME} <${FROM_EMAIL}>`,
+      to: [opts.to],
       subject: opts.subject,
-      htmlContent: opts.html,
-      textContent: opts.text,
+      html: opts.html,
+      text: opts.text,
     }),
   });
 
   if (!res.ok) {
     const body = await res.text().catch(() => "");
-    throw new Error(`Brevo send failed (${res.status}): ${body}`);
+    throw new Error(`Resend send failed (${res.status}): ${body}`);
   }
 }
 
