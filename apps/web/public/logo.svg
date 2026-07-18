@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 248" role="img" aria-label="SHYN">
+  <defs>
+    <linearGradient id="shynGold" x1="15%" y1="0%" x2="90%" y2="100%">
+      <stop offset="0%" stop-color="#E9CB80"/>
+      <stop offset="45%" stop-color="#C9A84C"/>
+      <stop offset="100%" stop-color="#997A2E"/>
+    </linearGradient>
+    <linearGradient id="shynCream" x1="10%" y1="0%" x2="90%" y2="100%">
+      <stop offset="0%" stop-color="#FFFCF2"/>
+      <stop offset="100%" stop-color="#E6D9B3"/>
+    </linearGradient>
+  </defs>
+  <path d="M120 6 C102 6 86 16 66 24 C46 32 22 38 22 38 L22 132 C22 180 56 212 120 244 C184 212 218 180 218 132 L218 38 C218 38 194 32 174 24 C154 16 138 6 120 6 Z" fill="url(#shynCream)"/>
+  <path d="M120 20 C105 20 91 29 74 36 C57 43 36 48 36 48 L36 130 C36 170 64 197 120 224 C176 197 204 170 204 130 L204 48 C204 48 183 43 166 36 C149 29 135 20 120 20 Z" fill="url(#shynGold)"/>
+  <text x="120" y="146" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="54" letter-spacing="1" fill="#FBF4DD">SHYN</text>
+</svg>

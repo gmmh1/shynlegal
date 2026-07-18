@@ -26,7 +26,7 @@ export function SiteFooter() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2.5">
-              <Image src="/logo.png" alt="SHYN Legal" width={32} height={38} />
+              <Image src="/logo.svg" alt="SHYN Legal" width={32} height={38} />
               <span className="text-[15px] font-semibold text-foreground">SHYN Legal</span>
             </div>
             <p className="mt-4 max-w-xs text-sm leading-7 text-(--ink-variant)">
