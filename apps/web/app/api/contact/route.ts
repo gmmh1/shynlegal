@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
   }
 
   // ── Send emails immediately — independent of backend status ──
-  await Promise.allSettled([
+  const [officeResult, autoReplyResult] = await Promise.allSettled([
     sendEnquiryToOffice({
       name: payload.name,
       email: payload.email,
@@ -42,6 +42,13 @@ export async function POST(request: NextRequest) {
       visaType: payload.visaType,
     }),
   ]);
+
+  if (officeResult.status === "rejected") {
+    console.error("Failed to send office notification email:", officeResult.reason);
+  }
+  if (autoReplyResult.status === "rejected") {
+    console.error("Failed to send client auto-reply email:", autoReplyResult.reason);
+  }
 
   // ── Also save to backend DB if available (non-blocking) ──
   proxyJson("/api/contact", {

@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
   }
 
   // ── Send emails immediately — independent of backend status ──
-  await Promise.allSettled([
+  const [officeResult, autoReplyResult] = await Promise.allSettled([
     sendBookingToOffice(payload),
     sendBookingAutoReply({
       name:          payload.name,
@@ -44,6 +44,13 @@ export async function POST(request: NextRequest) {
       preferredTime: payload.preferredTime,
     }),
   ]);
+
+  if (officeResult.status === "rejected") {
+    console.error("Failed to send office notification email:", officeResult.reason);
+  }
+  if (autoReplyResult.status === "rejected") {
+    console.error("Failed to send client auto-reply email:", autoReplyResult.reason);
+  }
 
   // ── Save to backend: create lead + appointment (non-blocking) ──
   proxyJson("/api/contact", {

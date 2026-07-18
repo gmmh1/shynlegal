@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Fire both emails immediately
-  await Promise.allSettled([
+  const [officeResult, autoReplyResult] = await Promise.allSettled([
     sendConfirmedBookingToOffice({
       name: clientName,
       email: clientEmail,
@@ -39,6 +39,13 @@ export async function POST(request: NextRequest) {
       startTime,
     }),
   ]);
+
+  if (officeResult.status === "rejected") {
+    console.error("Failed to send office notification email:", officeResult.reason);
+  }
+  if (autoReplyResult.status === "rejected") {
+    console.error("Failed to send client auto-reply email:", autoReplyResult.reason);
+  }
 
   // Save lead to backend DB (fire-and-forget)
   proxyJson("/api/contact", {
