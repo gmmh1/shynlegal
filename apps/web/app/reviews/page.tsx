@@ -71,7 +71,6 @@ export default async function ReviewsPage() {
             </div>
           </div>
           <div className="surface-card px-5 py-3 flex items-center gap-3">
-            <span className="text-3xl font-bold text-gold-gradient">{reviewList.length}</span>
             <div>
               <p className="text-sm font-medium text-foreground">Verified reviews</p>
               <p className="text-xs text-(--ink-variant)">Google &amp; Facebook</p>
