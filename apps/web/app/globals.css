@@ -1,0 +1,363 @@
+@import "tailwindcss";
+
+:root {
+  /* ─── Surfaces ─── */
+  --surface:                   #020817;
+  --surface-dim:               #010610;
+  --surface-bright:            #182540;
+  --surface-container-lowest:  #010610;
+  --surface-container-low:     #08142A;
+  --surface-container:         #0D1E38;
+  --surface-container-high:    #132447;
+  --surface-container-highest: #1C2E55;
+  --surface-card:              #0F1E3A;
+
+  /* ─── Ink ─── */
+  --ink:              #EDE8DC;
+  --ink-variant:      #8A95A8;
+  --inverse-surface:  #EDE8DC;
+  --inverse-on-surface: #0D1E38;
+
+  /* ─── Lines ─── */
+  --line:         #3A4A60;
+  --line-variant: #1E2D45;
+
+  /* ─── Gold accent (logo match) ─── */
+  --gold:        #C9A84C;
+  --gold-light:  #E8CC72;
+  --gold-dim:    #A88730;
+  --gold-deep:   #5C4710;
+
+  /* ─── Primary ─── */
+  --primary:              #C9A84C;
+  --primary-on:           #020817;
+  --primary-container:    rgba(201, 168, 76, 0.12);
+  --primary-on-container: #C9A84C;
+
+  /* ─── Secondary — used for CTA buttons ─── */
+  --secondary:              #C9A84C;
+  --secondary-on:           #020817;
+  --secondary-container:    #C9A84C;
+  --secondary-on-container: #020817;
+
+  /* ─── Tertiary ─── */
+  --tertiary:              #6B9FD4;
+  --tertiary-on:           #020817;
+  --tertiary-container:    rgba(107, 159, 212, 0.12);
+  --tertiary-on-container: #6B9FD4;
+
+  /* ─── Error ─── */
+  --error:              #FF8A80;
+  --error-on:           #690005;
+  --error-container:    #93000a;
+  --error-on-container: #FFDAD6;
+
+  /* ─── Misc ─── */
+  --border-subtle: rgba(201, 168, 76, 0.18);
+  --cyan-accent:   #06b6d4;
+  --ai-thinking:   #7c3aed;
+  --ai-running:    #2563eb;
+  --ai-idle:       #64748b;
+
+  /* ─── Spacing ─── */
+  --space-xxs: 4px;
+  --space-xs:  8px;
+  --space-sm:  12px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  32px;
+
+  /* ─── Radius ─── */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  /* Compatibility aliases */
+  --card:        var(--surface-card);
+  --muted:       var(--ink-variant);
+  --accent:      var(--gold);
+  --accent-deep: var(--gold-deep);
+}
+
+@theme inline {
+  --color-background: var(--surface-dim);
+  --color-foreground: var(--ink);
+  --font-sans: var(--font-inter);
+}
+
+/* ─── Base ─── */
+body {
+  background:
+    radial-gradient(ellipse 80% 40% at 15% -5%,  rgba(201, 168, 76, 0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 30% at 85%  5%,  rgba(107, 159, 212, 0.05) 0%, transparent 50%),
+    linear-gradient(180deg, #020817 0%, #010610 100%);
+  color: var(--ink);
+  font-family: var(--font-inter), sans-serif;
+}
+
+/* ─── Form elements ─── */
+input,
+select,
+textarea {
+  border: 1px solid rgba(201, 168, 76, 0.22);
+  background: rgba(8, 20, 42, 0.85);
+  color: var(--ink);
+  border-radius: 10px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: color-mix(in srgb, var(--ink-variant) 55%, transparent);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: rgba(201, 168, 76, 0.55);
+  box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.1);
+}
+
+/* ─── Typography helpers ─── */
+.font-display {
+  font-family: var(--font-inter), sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.font-mono-ui {
+  font-family: var(--font-jetbrains), monospace;
+}
+
+.label-md {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+/* ─── Gold gradient text ─── */
+.text-gold {
+  color: var(--gold);
+}
+
+.text-gold-gradient {
+  background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 55%, var(--gold-dim) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Surface components ─── */
+.surface-panel {
+  border: 1px solid var(--border-subtle);
+  background: linear-gradient(
+    155deg,
+    var(--surface-container-high) 0%,
+    var(--surface-container) 100%
+  );
+  border-radius: 20px;
+}
+
+.surface-card {
+  border: 1px solid rgba(201, 168, 76, 0.13);
+  background: linear-gradient(
+    155deg,
+    var(--surface-card) 0%,
+    var(--surface-container-high) 100%
+  );
+  border-radius: 14px;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
+}
+
+.surface-card:hover {
+  border-color: rgba(201, 168, 76, 0.38);
+  box-shadow: 0 4px 32px rgba(201, 168, 76, 0.08), 0 0 0 1px rgba(201, 168, 76, 0.08);
+}
+
+.hero-panel {
+  border: 1px solid var(--border-subtle);
+  background:
+    radial-gradient(ellipse 70% 80% at 95%  0%, rgba(201, 168, 76, 0.13) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 60% at -5% 70%, rgba(107, 159, 212, 0.08) 0%, transparent 55%),
+    linear-gradient(155deg,
+      var(--surface-container-high) 0%,
+      var(--surface-container)      55%,
+      var(--surface-container-low)  100%
+    );
+}
+
+/* ─── Dividers ─── */
+.divider-gold {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--gold) 50%, transparent 100%);
+  opacity: 0.22;
+}
+
+/* ─── Gold pill button ─── */
+.btn-gold {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 50%, var(--gold-dim) 100%);
+  color: #020817;
+  font-weight: 600;
+  font-size: 0.813rem;
+  border-radius: 9999px;
+  padding: 0.625rem 1.5rem;
+  transition: filter 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.btn-gold:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 0 24px rgba(201, 168, 76, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 0.813rem;
+  border-radius: 9999px;
+  padding: 0.625rem 1.5rem;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-ghost:hover {
+  background: rgba(201, 168, 76, 0.08);
+  border-color: rgba(201, 168, 76, 0.5);
+}
+
+/* ─── Review card marquee (left → right infinite scroll) ─── */
+
+@keyframes marquee-ltr {
+  0%   { transform: translateX(-50%); }
+  100% { transform: translateX(0%); }
+}
+
+/* Outer: fades edges, clips only horizontally so cards can expand vertically */
+.marquee-outer {
+  overflow-x: clip;    /* clips horizontal overflow without blocking vertical */
+  overflow-y: visible;
+  width: 100%;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+  padding-bottom: 1rem; /* room for expanded card shadow */
+}
+
+/* Inner: single horizontal row, never wraps */
+.marquee-track {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: flex-start; /* cards align to top so they can expand independently */
+  gap: 1.25rem;
+  width: max-content;
+  animation: marquee-ltr 280s linear infinite;
+  will-change: transform;
+}
+
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+/* ─── Dynamic effects ─── */
+
+/* Fade-up on load for page sections */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+@keyframes pulse-gold {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201, 168, 76, 0); }
+  50%       { box-shadow: 0 0 20px 4px rgba(201, 168, 76, 0.2); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Auto-animate direct children of main on page load */
+main > section,
+main > div,
+main > form {
+  animation: fadeUp 0.55s ease both;
+}
+
+main > section:nth-child(1) { animation-delay: 0.05s; }
+main > section:nth-child(2),
+main > div:nth-child(2)     { animation-delay: 0.12s; }
+main > section:nth-child(3),
+main > div:nth-child(3)     { animation-delay: 0.20s; }
+main > section:nth-child(4),
+main > div:nth-child(4)     { animation-delay: 0.28s; }
+main > section:nth-child(5) { animation-delay: 0.36s; }
+
+/* Shimmering gold text */
+.text-gold-gradient {
+  background: linear-gradient(
+    90deg,
+    var(--gold-dim) 0%,
+    var(--gold-light) 35%,
+    var(--gold) 50%,
+    var(--gold-light) 65%,
+    var(--gold-dim) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
+}
+
+/* Gold glow pulse on CTA buttons */
+.btn-gold {
+  animation: none;
+}
+.btn-gold:focus-visible {
+  animation: pulse-gold 1.5s ease infinite;
+}
+
+/* Smooth card lift on hover */
+.surface-card {
+  will-change: transform;
+}
+
+/* Spinner utility */
+.animate-spin {
+  animation: spin 0.8s linear infinite;
+}
+
+/* Pulse utility */
+.animate-pulse {
+  animation: pulse-gold 1.5s ease-in-out infinite;
+}
+
+/* ─── AI status classes ─── */
+.status-ai-running {
+  background: color-mix(in srgb, var(--ai-running) 18%, transparent);
+  color: #cdd7ff;
+}
+
+.status-ai-thinking {
+  background: color-mix(in srgb, var(--ai-thinking) 18%, transparent);
+  color: #eaddff;
+}
+
+.status-ai-idle {
+  background: color-mix(in srgb, var(--ai-idle) 20%, transparent);
+  color: #c6c6cd;
+}

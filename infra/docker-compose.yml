@@ -1,0 +1,73 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: shyn-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: shynlegal
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/001-schema.sql
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: shyn-n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      N8N_BASIC_AUTH_ACTIVE: "true"
+      N8N_BASIC_AUTH_USER: admin
+      N8N_BASIC_AUTH_PASSWORD: admin123
+      TZ: Europe/London
+    volumes:
+      - n8n-data:/home/node/.n8n
+
+  wordpress:
+    image: wordpress:6-php8.2-apache
+    container_name: shyn-wordpress
+    restart: unless-stopped
+    depends_on:
+      - wordpress-db
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: wordpress-db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wordpress-data:/var/www/html
+      - ./wordpress/plugins:/var/www/html/wp-content/plugins
+
+  wordpress-db:
+    image: mariadb:11
+    container_name: shyn-wordpress-db
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wordpress
+      MARIADB_PASSWORD: wordpress
+      MARIADB_ROOT_PASSWORD: root
+    volumes:
+      - wordpress-db-data:/var/lib/mysql
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: shyn-ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+
+volumes:
+  pg-data:
+  n8n-data:
+  wordpress-data:
+  wordpress-db-data:
+  ollama-data:

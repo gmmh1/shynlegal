@@ -1,0 +1,91 @@
+{
+  "name": "Shyn Review Alert",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "review-alert",
+        "httpMethod": "POST",
+        "responseMode": "responseNode"
+      },
+      "id": "Webhook_ReviewAlert",
+      "name": "Review Alert Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 280]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{$json.body.rating}}",
+              "operation": "smallerEqual",
+              "value2": 3
+            }
+          ]
+        }
+      },
+      "id": "If_NegativeReview",
+      "name": "Is Negative Review",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [500, 280]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"status\":\"ok\",\"flagged\":true}"
+      },
+      "id": "Respond_ReviewFlagged",
+      "name": "Respond Flagged",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [780, 220]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"status\":\"ok\",\"flagged\":false}"
+      },
+      "id": "Respond_ReviewIgnored",
+      "name": "Respond Ignored",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [780, 360]
+    }
+  ],
+  "connections": {
+    "Review Alert Webhook": {
+      "main": [
+        [
+          {
+            "node": "Is Negative Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Negative Review": {
+      "main": [
+        [
+          {
+            "node": "Respond Flagged",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond Ignored",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "review-alert-v1"
+}

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" width="200" height="240">
+  <defs>
+    <linearGradient id="cream" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FAF3E6"/>
+      <stop offset="100%" stop-color="#EBD9B8"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D8B454"/>
+      <stop offset="40%" stop-color="#C29827"/>
+      <stop offset="100%" stop-color="#7A580E"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Cream outer shield -->
+  <path d="M36,5 C18,5 5,18 5,36 L5,148 C5,188 48,213 100,233 C152,213 195,188 195,148 L195,36 C195,18 182,5 164,5 Z" fill="url(#cream)"/>
+
+  <!-- Gold inner shield -->
+  <path d="M42,16 C27,16 16,27 16,42 L16,147 C16,184 52,207 100,226 C148,207 184,184 184,147 L184,42 C184,27 173,16 158,16 Z" fill="url(#gold)"/>
+
+  <!-- S glyph — left -->
+  <path d="M44,78 C44,68 52,62 63,62 C74,62 81,68 81,78 C81,87 74,91 63,95 C52,99 44,104 44,114 C44,125 52,132 63,132 C74,132 82,125 82,115"
+        fill="none" stroke="white" stroke-width="10" stroke-linecap="round"/>
+
+  <!-- H glyph — centre -->
+  <path d="M90,62 L90,132 M90,97 L118,97 M118,62 L118,132"
+        fill="none" stroke="white" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- N glyph — right -->
+  <path d="M127,132 L127,62 L158,132 L158,62"
+        fill="none" stroke="white" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

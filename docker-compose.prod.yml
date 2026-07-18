@@ -1,0 +1,141 @@
+services:
+
+  # ── PostgreSQL ─────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: shyn-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-shynlegal}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+      - ./infra/db/schema.sql:/docker-entrypoint-initdb.d/001-schema.sql:ro
+    networks: [shyn-net]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Node.js API ────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: shyn-api
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-shynlegal}
+      NODE_ENV: production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [shyn-net]
+    ports:
+      - "4000:4000"
+
+  # ── Next.js Frontend ───────────────────────────────────
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: shyn-web
+    restart: unless-stopped
+    env_file: apps/web/.env.local
+    environment:
+      NODE_ENV: production
+      API_BASE_URL: http://api:4000
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
+      NEXT_PUBLIC_APP_BASE_URL: ${NEXT_PUBLIC_APP_BASE_URL}
+    depends_on:
+      - api
+    networks: [shyn-net]
+    ports:
+      - "3000:3000"
+
+  # ── WordPress ─────────────────────────────────────────
+  wordpress:
+    image: wordpress:6-php8.2-apache
+    container_name: shyn-wordpress
+    restart: unless-stopped
+    depends_on:
+      - wordpress-db
+    environment:
+      WORDPRESS_DB_HOST: wordpress-db:3306
+      WORDPRESS_DB_USER: ${WP_DB_USER:-wordpress}
+      WORDPRESS_DB_PASSWORD: ${WP_DB_PASSWORD:?WP_DB_PASSWORD required}
+      WORDPRESS_DB_NAME: ${WP_DB_NAME:-wordpress}
+    volumes:
+      - wordpress-data:/var/www/html
+      - ./infra/wordpress/plugins:/var/www/html/wp-content/plugins:ro
+    networks: [shyn-net]
+    ports:
+      - "8080:80"
+
+  # ── WordPress MariaDB ─────────────────────────────────
+  wordpress-db:
+    image: mariadb:11
+    container_name: shyn-wordpress-db
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: ${WP_DB_NAME:-wordpress}
+      MARIADB_USER: ${WP_DB_USER:-wordpress}
+      MARIADB_PASSWORD: ${WP_DB_PASSWORD:?WP_DB_PASSWORD required}
+      MARIADB_ROOT_PASSWORD: ${WP_DB_ROOT_PASSWORD:?WP_DB_ROOT_PASSWORD required}
+    volumes:
+      - wordpress-db-data:/var/lib/mysql
+    networks: [shyn-net]
+
+  # ── Nginx reverse proxy ───────────────────────────────
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: shyn-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infra/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./infra/nginx/conf.d:/etc/nginx/conf.d:ro
+      - certbot-www:/var/www/certbot:ro
+      - certbot-certs:/etc/letsencrypt:ro
+    depends_on:
+      - web
+      - api
+      - wordpress
+    networks: [shyn-net]
+
+  # ── Certbot (Let's Encrypt) ───────────────────────────
+  certbot:
+    image: certbot/certbot:latest
+    container_name: shyn-certbot
+    volumes:
+      - certbot-www:/var/www/certbot
+      - certbot-certs:/etc/letsencrypt
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+  # ── Ollama (AI) ───────────────────────────────────────
+  ollama:
+    image: ollama/ollama:latest
+    container_name: shyn-ollama
+    restart: unless-stopped
+    volumes:
+      - ollama-data:/root/.ollama
+    networks: [shyn-net]
+    ports:
+      - "11434:11434"
+
+volumes:
+  pg-data:
+  wordpress-data:
+  wordpress-db-data:
+  ollama-data:
+  certbot-www:
+  certbot-certs:
+
+networks:
+  shyn-net:
+    driver: bridge

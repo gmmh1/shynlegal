@@ -1,0 +1,78 @@
+{
+  "name": "Shyn Daily Dashboard Digest",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * *"
+            }
+          ]
+        }
+      },
+      "id": "Schedule_DailyDigest",
+      "name": "Daily 08:00 UK",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 280]
+    },
+    {
+      "parameters": {
+        "url": "http://host.docker.internal:4000/api/admin/analytics",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-admin-key",
+              "value": "replace-with-admin-key"
+            }
+          ]
+        }
+      },
+      "id": "Http_GetAnalytics",
+      "name": "Fetch Analytics",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [500, 280]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $json;\nreturn [{ json: { summary: `Leads: ${data.totalLeads}, Bookings today: ${data.bookingsToday}, AI conversations: ${data.aiConversations}, High risk: ${data.highRiskCases}, Conversion: ${data.conversionRate}%` } }];"
+      },
+      "id": "Code_SummarizeAnalytics",
+      "name": "Build Digest",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [760, 280]
+    }
+  ],
+  "connections": {
+    "Daily 08:00 UK": {
+      "main": [
+        [
+          {
+            "node": "Fetch Analytics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Analytics": {
+      "main": [
+        [
+          {
+            "node": "Build Digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "daily-dashboard-digest-v1"
+}

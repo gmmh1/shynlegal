@@ -1,0 +1,74 @@
+{
+  "name": "Shyn Booking Event",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "booking-event",
+        "httpMethod": "POST",
+        "responseMode": "responseNode"
+      },
+      "id": "Webhook_BookingEvent",
+      "name": "Booking Event Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 280]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "summary",
+              "name": "summary",
+              "value": "=Booking {{$json.body.action}} for appointment {{$json.body.appointmentId || $json.body.bookingId}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "Set_BookingSummary",
+      "name": "Build Booking Summary",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [500, 280]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"status\":\"ok\",\"message\":$json.summary}"
+      },
+      "id": "Respond_Booking",
+      "name": "Respond OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [760, 280]
+    }
+  ],
+  "connections": {
+    "Booking Event Webhook": {
+      "main": [
+        [
+          {
+            "node": "Build Booking Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Booking Summary": {
+      "main": [
+        [
+          {
+            "node": "Respond OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "booking-event-v1"
+}

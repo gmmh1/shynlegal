@@ -1,0 +1,17 @@
+{
+  "provider": "google",
+  "reviews": [
+    {
+      "author": "Jane Doe",
+      "rating": 5,
+      "content": "Professional and clear immigration guidance from the first consultation.",
+      "approved": true
+    },
+    {
+      "author": "John Smith",
+      "rating": 2,
+      "content": "Communication was slower than expected and I needed more updates.",
+      "approved": false
+    }
+  ]
+}

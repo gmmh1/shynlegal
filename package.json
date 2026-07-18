@@ -1,0 +1,24 @@
+{
+  "name": "shynlegal",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shyn Legal AI-powered immigration operating system",
+  "scripts": {
+    "dev:web": "npm --workspace apps/web run dev",
+    "dev:api": "npm --workspace apps/api run dev",
+    "build": "npm run build --workspaces",
+    "lint": "npm run lint --workspaces",
+    "typecheck": "npm run typecheck --workspaces"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "keywords": [
+    "shyn-legal",
+    "immigration",
+    "nextjs",
+    "ai"
+  ],
+  "license": "UNLICENSED"
+}
