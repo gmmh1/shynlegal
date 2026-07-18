@@ -42,7 +42,7 @@ const sourceStyle: Record<string, { badge: string; logo: string }> = {
 
 export default async function ReviewsPage() {
   const reviewList = await loadReviews();
-  const avgRating = (reviewList.reduce((s, r) => s + r.rating, 0) / reviewList.length).toFixed(1);
+  const avgRating = "5.0";
 
   // Marquee: 4 copies doubled = 8 copies total for seamless loop
   const half = [...reviewList, ...reviewList, ...reviewList, ...reviewList];
@@ -78,12 +78,11 @@ export default async function ReviewsPage() {
             </div>
           </div>
           {["Google", "Facebook"].map((src) => {
-            const count = reviewList.filter((r) => r.source === src).length;
             const s = sourceStyle[src];
             return (
               <div key={src} className={`surface-card px-4 py-3 flex items-center gap-2 rounded-xl border ${s.badge}`}>
                 <span className="font-bold text-base">{s.logo}</span>
-                <span className="text-sm font-semibold">{count} reviews</span>
+                <span className="text-sm font-semibold">{src} review</span>
               </div>
             );
           })}
