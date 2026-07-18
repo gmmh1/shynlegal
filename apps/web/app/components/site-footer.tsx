@@ -86,7 +86,17 @@ export function SiteFooter() {
         <div className="divider-gold mt-10" />
 
         <div className="mt-6 flex flex-col gap-3 text-xs text-(--ink-variant) sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} SHYN Legal. All rights reserved.</p>
+          <p>
+            © {new Date().getFullYear()} SHYN Legal. All rights reserved. Powered by{" "}
+            <a
+              href="https://gmhco.org/"
+              target="_blank"
+              rel="noopener"
+              className="hover:text-[#C9A84C] transition-colors"
+            >
+              GMHCO
+            </a>
+          </p>
           <div className="flex flex-wrap items-center gap-4">
             <Link href="/terms" className="hover:text-[#C9A84C] transition-colors">
               Terms &amp; Conditions
