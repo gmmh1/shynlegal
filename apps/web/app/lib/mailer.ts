@@ -1,26 +1,41 @@
-import nodemailer from "nodemailer";
-
-function transporter() {
-  const host = process.env.SMTP_HOST;
-  const port = Number(process.env.SMTP_PORT ?? 587);
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
-
-  if (!host || !user || !pass) return null;
-
-  return nodemailer.createTransport({
-    host,
-    port,
-    secure: port === 465,
-    auth: { user, pass },
-    connectionTimeout: 10_000,
-    greetingTimeout: 10_000,
-    socketTimeout: 15_000,
-  });
-}
-
-const FROM = `"SHYN Legal" <${process.env.SMTP_FROM ?? process.env.SMTP_USER ?? "info@shynlegal.co.uk"}>`;
+// Sent via Brevo's HTTP API rather than raw SMTP: Railway blocks outbound
+// SMTP (ports 465/587) at the platform level, so a direct connection to any
+// mail server — including well-known ones like Gmail/Outlook — times out or
+// gets refused. The HTTP API runs over normal HTTPS, which isn't blocked.
+const BREVO_API_KEY = process.env.BREVO_API_KEY;
+const FROM_EMAIL = process.env.SMTP_FROM ?? process.env.SMTP_USER ?? "info@shynlegal.co.uk";
+const FROM_NAME = "SHYN Legal";
 const NOTIFY = process.env.NOTIFY_EMAIL ?? "info@shynlegal.co.uk";
+
+async function sendMail(opts: {
+  to: string;
+  subject: string;
+  text: string;
+  html: string;
+}) {
+  if (!BREVO_API_KEY) return;
+
+  const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "api-key": BREVO_API_KEY,
+    },
+    body: JSON.stringify({
+      sender: { name: FROM_NAME, email: FROM_EMAIL },
+      to: [{ email: opts.to }],
+      subject: opts.subject,
+      htmlContent: opts.html,
+      textContent: opts.text,
+    }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    throw new Error(`Brevo send failed (${res.status}): ${body}`);
+  }
+}
 
 function wrap(title: string, body: string) {
   return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title></head>
@@ -60,9 +75,6 @@ export async function sendEnquiryToOffice(data: {
   visaType: string;
   message: string;
 }) {
-  const t = transporter();
-  if (!t) return;
-
   const html = wrap(
     "New Client Enquiry",
     `<p style="margin:0 0 20px;font-size:15px;color:#444;">A new enquiry was submitted via the website contact form.</p>
@@ -88,8 +100,7 @@ export async function sendEnquiryToOffice(data: {
     data.message,
   ].join("\n");
 
-  await t.sendMail({
-    from: FROM,
+  await sendMail({
     to: NOTIFY,
     subject: `New Enquiry — ${data.name} (${data.visaType})`,
     text,
@@ -106,9 +117,6 @@ export async function sendBookingToOffice(data: {
   preferredTime: string;
   message: string;
 }) {
-  const t = transporter();
-  if (!t) return;
-
   const dateLabel = data.preferredDate
     ? new Date(data.preferredDate).toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
     : "Not specified";
@@ -144,8 +152,7 @@ export async function sendBookingToOffice(data: {
     data.message,
   ].join("\n");
 
-  await t.sendMail({
-    from: FROM,
+  await sendMail({
     to: NOTIFY,
     subject: `New Consultation Request — ${data.name} (${data.visaType}) — ${data.preferredTime} ${dateLabel}`,
     text,
@@ -160,9 +167,6 @@ export async function sendBookingAutoReply(data: {
   preferredDate: string;
   preferredTime: string;
 }) {
-  const t = transporter();
-  if (!t) return;
-
   const firstName = data.name.split(" ")[0];
   const dateLabel = data.preferredDate
     ? new Date(data.preferredDate).toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
@@ -207,8 +211,7 @@ export async function sendBookingAutoReply(data: {
     "Reza Rahman — SHYN Legal",
   ].join("\n");
 
-  await t.sendMail({
-    from: FROM,
+  await sendMail({
     to: data.email,
     subject: "Your consultation request — SHYN Legal",
     text,
@@ -243,9 +246,6 @@ export async function sendConfirmedBookingToOffice(data: {
   startTime: string;
   calBookingUid: string;
 }) {
-  const t = transporter();
-  if (!t) return;
-
   const timeLabel = formatConfirmedTime(data.startTime);
 
   const html = wrap(
@@ -278,8 +278,7 @@ export async function sendConfirmedBookingToOffice(data: {
     data.message ? `\nCase details:\n${data.message}` : "",
   ].join("\n");
 
-  await t.sendMail({
-    from: FROM,
+  await sendMail({
     to: NOTIFY,
     subject: `Booking Confirmed — ${data.name} — ${timeLabel}`,
     text,
@@ -293,9 +292,6 @@ export async function sendConfirmedBookingAutoReply(data: {
   visaType: string;
   startTime: string;
 }) {
-  const t = transporter();
-  if (!t) return;
-
   const firstName = data.name.split(" ")[0];
   const timeLabel = formatConfirmedTime(data.startTime);
 
@@ -333,8 +329,7 @@ export async function sendConfirmedBookingAutoReply(data: {
     "Reza Rahman — SHYN Legal",
   ].join("\n");
 
-  await t.sendMail({
-    from: FROM,
+  await sendMail({
     to: data.email,
     subject: "Your consultation is confirmed — SHYN Legal",
     text,
@@ -347,9 +342,6 @@ export async function sendAutoReply(data: {
   email: string;
   visaType: string;
 }) {
-  const t = transporter();
-  if (!t) return;
-
   const firstName = data.name.split(" ")[0];
 
   const html = wrap(
@@ -387,8 +379,7 @@ export async function sendAutoReply(data: {
     "Reza Rahman — SHYN Legal",
   ].join("\n");
 
-  await t.sendMail({
-    from: FROM,
+  await sendMail({
     to: data.email,
     subject: "We have received your enquiry — SHYN Legal",
     text,
