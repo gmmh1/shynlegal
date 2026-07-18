@@ -28,7 +28,7 @@ export function SiteHeader() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 group shrink-0">
             <Image
-              src="/logo.svg"
+              src="/logo.png"
               alt="SHYN Legal"
               width={36}
               height={43}
