@@ -43,10 +43,10 @@ const slides: Slide[] = [
 ];
 
 const stats = [
-  { value: "500+", label: "Cases handled" },
+  { value: "200+", label: "Cases handled" },
   { value: "5★", label: "Average rating" },
-  { value: "27+", label: "Verified reviews" },
-  { value: "98%", label: "Client satisfaction" },
+  { value: "100+", label: "Verified reviews" },
+  { value: "100%", label: "Client satisfaction" },
 ];
 
 const serviceIcons: Record<string, string> = {
