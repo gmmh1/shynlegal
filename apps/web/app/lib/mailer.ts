@@ -12,6 +12,7 @@ async function sendMail(opts: {
   subject: string;
   text: string;
   html: string;
+  replyTo?: string;
 }) {
   if (!RESEND_API_KEY) return;
 
@@ -27,6 +28,7 @@ async function sendMail(opts: {
       subject: opts.subject,
       html: opts.html,
       text: opts.text,
+      ...(opts.replyTo ? { reply_to: opts.replyTo } : {}),
     }),
   });
 
@@ -104,6 +106,7 @@ export async function sendEnquiryToOffice(data: {
     subject: `New Enquiry — ${data.name} (${data.visaType})`,
     text,
     html,
+    replyTo: data.email,
   });
 }
 
@@ -156,6 +159,7 @@ export async function sendBookingToOffice(data: {
     subject: `New Consultation Request — ${data.name} (${data.visaType}) — ${data.preferredTime} ${dateLabel}`,
     text,
     html,
+    replyTo: data.email,
   });
 }
 
@@ -282,6 +286,7 @@ export async function sendConfirmedBookingToOffice(data: {
     subject: `Booking Confirmed — ${data.name} — ${timeLabel}`,
     text,
     html,
+    replyTo: data.email,
   });
 }
 

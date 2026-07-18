@@ -10,6 +10,7 @@ async function sendMail(options: {
   subject: string;
   text: string;
   html: string;
+  replyTo?: string;
 }) {
   if (!config.resendApiKey) return;
 
@@ -25,6 +26,7 @@ async function sendMail(options: {
       subject: options.subject,
       html: options.html,
       text: options.text,
+      ...(options.replyTo ? { reply_to: options.replyTo } : {}),
     }),
   });
 
@@ -147,6 +149,7 @@ export async function sendEnquiryNotification(data: {
     subject: `New Enquiry — ${data.name} (${data.visaType})`,
     text: plainText,
     html: emailWrapper("New Client Enquiry", bodyHtml),
+    replyTo: data.email,
   });
 }
 
