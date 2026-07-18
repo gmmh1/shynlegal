@@ -1,43 +1,38 @@
-import nodemailer from "nodemailer";
 import { config } from "./config.js";
 import { logAutomationEvent } from "./db.js";
 
-// ── SMTP transporter ─────────────────────────────────────
-
-function createTransporter() {
-  if (
-    !config.smtpHost ||
-    !config.smtpPort ||
-    !config.smtpUser ||
-    !config.smtpPass
-  ) {
-    return null;
-  }
-
-  return nodemailer.createTransport({
-    host: config.smtpHost,
-    port: config.smtpPort,
-    secure: config.smtpPort === 465,
-    auth: { user: config.smtpUser, pass: config.smtpPass },
-  });
-}
-
+// Sent via Brevo's HTTP API rather than raw SMTP: many PaaS hosts (Railway
+// included) block outbound SMTP (ports 465/587) at the platform level, so a
+// direct connection to any mail server times out or gets refused. The HTTP
+// API runs over normal HTTPS, which isn't blocked.
 async function sendMail(options: {
   to: string;
   subject: string;
   text: string;
   html: string;
 }) {
-  const transporter = createTransporter();
-  if (!transporter) return;
+  if (!config.brevoApiKey) return;
 
-  await transporter.sendMail({
-    from: `"SHYN Legal" <${config.smtpFrom ?? config.smtpUser}>`,
-    to: options.to,
-    subject: options.subject,
-    text: options.text,
-    html: options.html,
+  const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "api-key": config.brevoApiKey,
+    },
+    body: JSON.stringify({
+      sender: { name: "SHYN Legal", email: config.smtpFrom ?? config.smtpUser ?? "info@shynlegal.co.uk" },
+      to: [{ email: options.to }],
+      subject: options.subject,
+      htmlContent: options.html,
+      textContent: options.text,
+    }),
   });
+
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    throw new Error(`Brevo send failed (${res.status}): ${body}`);
+  }
 }
 
 // ── Shared HTML wrapper ──────────────────────────────────
