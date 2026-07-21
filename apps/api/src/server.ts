@@ -25,6 +25,7 @@ import {
   upsertExternalReview,
   upsertSettingValue,
   updateAppointmentStatus,
+  deleteReviewCache,
 } from "./db.js";
 import {
   fetchGoogleReviews,
@@ -918,6 +919,29 @@ app.get("/api/admin/reviews", adminLimiter, requireAdmin, async (req, res) => {
   const reviewsCache = await listReviews(limit);
   return res.json({ reviews: reviewsCache });
 });
+
+app.delete(
+  "/api/admin/reviews/:id",
+  adminLimiter,
+  requireAdmin,
+  async (req, res) => {
+    const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const deleted = await deleteReviewCache(id);
+
+    if (!deleted) {
+      return res.status(404).json({ error: "Review not found" });
+    }
+
+    await logAdminAudit({
+      actor: getAdminActor(req),
+      action: "delete",
+      resource: "reviews",
+      payload: { id: deleted.id, source: deleted.source, author: deleted.author },
+    });
+
+    return res.json({ review: deleted });
+  },
+);
 
 app.get(
   "/api/admin/automation-logs",

@@ -211,6 +211,14 @@ export async function listPublishedReviews(limit = 50) {
   return result.rows;
 }
 
+export async function deleteReviewCache(id: string) {
+  const result = await pool.query(
+    "DELETE FROM reviews_cache WHERE id = $1 RETURNING *",
+    [id],
+  );
+  return result.rows[0] ?? null;
+}
+
 export async function upsertExternalReview(input: {
   source: string;
   author?: string;

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { fetchAdminJson } from "../lib/admin-api";
 import { ReviewSyncPanel } from "./components/ReviewSyncPanel";
+import { ReviewsList } from "./components/ReviewsList";
 
 type Analytics = {
   totalLeads: number;
@@ -274,36 +275,7 @@ export default async function DashboardPage() {
           <p className="mt-2 text-sm leading-6 text-(--ink-variant)">
             Latest feedback and whether there is a reply draft ready.
           </p>
-          <div className="mt-5 grid gap-3">
-            {data.reviews.length > 0 ? (
-              data.reviews.map((review) => (
-                <div key={review.id} className="surface-card p-4">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <p className="text-base font-semibold text-foreground">
-                        {review.author ?? "Anonymous"}
-                      </p>
-                      <p className="mt-1 text-sm text-(--ink-variant)">
-                        {review.source} · {"★".repeat(review.rating)}
-                      </p>
-                    </div>
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-semibold ${statusTone(review.approved ? "approved" : "pending")}`}
-                    >
-                      {review.approved ? "Ready to share" : "Needs a reply"}
-                    </span>
-                  </div>
-                  <p className="mt-3 text-sm leading-6 text-(--ink-variant)">
-                    {review.content}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <p className="text-sm text-(--ink-variant)">
-                No reviews have been pulled in yet.
-              </p>
-            )}
-          </div>
+          <ReviewsList initialReviews={data.reviews} />
         </article>
 
         <article className="surface-panel rounded-[1.75rem] p-6">
