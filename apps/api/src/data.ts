@@ -45,13 +45,6 @@ export const reviews = [
     content:
       "The consultation was detailed and practical. I felt prepared before submitting my application.",
   },
-  {
-    source: "Google",
-    rating: 4,
-    author: "L. Morris",
-    content:
-      "Helpful process and excellent document checklist support from start to finish.",
-  },
 ];
 
 export function buildSummary(visaType: VisaType, details: string): AISummary {
